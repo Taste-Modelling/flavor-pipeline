@@ -1,0 +1,7 @@
+# Dagster instance configuration
+# This file configures persistent storage so materialization state survives restarts
+
+# Use SQLite for all local storage (runs, events, schedules)
+storage:
+  sqlite:
+    base_dir: .dagster_home

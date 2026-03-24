@@ -1,0 +1,59 @@
+# Raw and processed data
+raw_data/
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Dagster
+.dagster/
+.dagster_home/
+dagster_home/
+.tmp_dagster_home_*
+storage/
+.telemetry/
+
+# Direnv
+.direnv/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Secrets
+.env
+*.pem
+credentials.json
