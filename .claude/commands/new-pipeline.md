@@ -195,7 +195,7 @@ def [name]_tier1(context: AssetExecutionContext) -> None:
     context.log.info(f"Saved {count} molecules to {parquet_path} and {json_path}")
 ```
 
-Don't forget to add `"[name]_tier1"` to the deps list of the `consolidated_tier1` asset.
+Don't forget to add `"[name]_tier1"` to the deps list of the `merged_tier2` asset in `tier2.py`.
 
 ### Step 6: Verify Everything
 
@@ -247,7 +247,8 @@ fetch_{name}() ─────► raw_data/{SourceName}/compounds.csv
                                     data/tier1/{name}.json
        │
        ▼
-consolidated_tier1 ─────► data/tier1/consolidated.json
+merged_tier2 ─────► data/tier2/merged.parquet
+                    data/tier2/merged.json (multi-source merged)
 ```
 
 ## Checklist
@@ -256,6 +257,6 @@ consolidated_tier1 ─────► data/tier1/consolidated.json
 - [ ] Acquirer class created and registered
 - [ ] Source adapter created and registered
 - [ ] Tier1 asset created and registered (saves both parquet and JSON)
-- [ ] New source added to `consolidated_tier1` deps
+- [ ] New source added to `merged_tier2` deps in `tier2.py`
 - [ ] All files pass syntax check
 - [ ] Dagster recognizes new assets

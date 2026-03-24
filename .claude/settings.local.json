@@ -4,7 +4,11 @@
       "Bash(python3 -m pip install:*)",
       "Bash(uv venv:*)",
       "Bash(source:*)",
-      "Bash(uv pip install:*)"
+      "Bash(uv pip install:*)",
+      "Bash(export:*)",
+      "Bash(python -m py_compile:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(python:*)"
     ]
   }
 }

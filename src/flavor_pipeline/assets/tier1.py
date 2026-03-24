@@ -288,33 +288,3 @@ def leffingwell_tier1(context: AssetExecutionContext) -> None:
     context.log.info(f"Saved {count} molecules to {parquet_path} and {json_path}")
 
 
-@asset(
-    group_name="tier1",
-    deps=[
-        "bitterdb_tier1",
-        "fenaroli_tier1",
-        "flavordb2_tier1",
-        "fsbi_tier1",
-        "panten_tier1",
-        "vcf_tier1",
-        "foodb_tier1",
-        "leffingwell_tier1",
-    ],
-    description="Consolidated JSON of all Tier 1 molecules from all sources",
-)
-def consolidated_tier1(context: AssetExecutionContext) -> None:
-    """Combine all tier1 JSON files into a single consolidated JSON."""
-    all_molecules = []
-
-    for source_file in TIER1_OUTPUT_DIR.glob("*.json"):
-        if source_file.name == "consolidated.json":
-            continue
-        with open(source_file) as f:
-            molecules = json.load(f)
-            all_molecules.extend(molecules)
-
-    output_path = TIER1_OUTPUT_DIR / "consolidated.json"
-    with open(output_path, "w") as f:
-        json.dump(all_molecules, f, indent=2, default=str)
-
-    context.log.info(f"Consolidated {len(all_molecules)} molecules to {output_path}")

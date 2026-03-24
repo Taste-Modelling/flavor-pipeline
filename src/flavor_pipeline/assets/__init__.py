@@ -1,8 +1,9 @@
 """Dagster assets for the flavor pipeline.
 
-Assets are organized in two groups:
+Assets are organized in three groups:
 - acquisition: Fetch raw data from external sources
 - tier1: Parse raw data to Tier1Molecule format with provenance tracking
+- tier2: Merge molecules by ID with multi-source attribution
 """
 
 from flavor_pipeline.assets.acquisition import (
@@ -22,6 +23,7 @@ from flavor_pipeline.assets.tier1 import (
     panten_tier1,
     vcf_tier1,
 )
+from flavor_pipeline.assets.tier2 import merged_tier2
 
 __all__ = [
     # Acquisition assets
@@ -39,4 +41,6 @@ __all__ = [
     "fenaroli_tier1",
     "panten_tier1",
     "leffingwell_tier1",
+    # Tier 2 assets
+    "merged_tier2",
 ]

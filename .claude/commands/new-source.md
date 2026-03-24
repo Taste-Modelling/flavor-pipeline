@@ -160,7 +160,7 @@ def [name]_tier1(context: AssetExecutionContext) -> None:
 Don't forget to:
 - Import `[SourceName]Source` at the top of tier1.py
 - Export the asset in `assets/__init__.py`
-- Add `"[name]_tier1"` to the deps list of `consolidated_tier1` asset
+- Add `"[name]_tier1"` to the deps list of `merged_tier2` asset in `tier2.py`
 
 ### 5. Verify
 

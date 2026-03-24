@@ -11,18 +11,32 @@ The factory approach ensures consistent behavior across all acquisition assets.
 from dagster import Definitions, load_assets_from_modules
 
 from flavor_pipeline.acquirers.factory import create_acquisition_assets
-from flavor_pipeline.assets import tier1
+from flavor_pipeline.assets import tier1, tier2
+from flavor_pipeline.food_assets import tier1 as food_tier1
+from flavor_pipeline.food_assets import tier2 as food_tier2
 
 # Approach 1: Generate acquisition assets from acquirer classes
 # This ensures all acquirers follow the same patterns
 acquisition_assets = create_acquisition_assets()
 
-# Approach 2: Load tier1 assets from the assets module
+# Approach 2: Load tier1 and tier2 assets from the assets module
 # (these still use the manual @asset decorator approach)
+# Molecule pipeline assets
 tier1_assets = load_assets_from_modules([tier1])
+tier2_assets = load_assets_from_modules([tier2])
+
+# Food pipeline assets (separate from molecule pipeline)
+food_tier1_assets = load_assets_from_modules([food_tier1])
+food_tier2_assets = load_assets_from_modules([food_tier2])
 
 # Combine all assets
-all_assets = acquisition_assets + tier1_assets
+all_assets = [
+    *acquisition_assets,
+    *tier1_assets,
+    *tier2_assets,
+    *food_tier1_assets,
+    *food_tier2_assets,
+]
 
 defs = Definitions(
     assets=all_assets,
