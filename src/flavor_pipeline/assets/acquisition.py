@@ -16,6 +16,7 @@ from flavor_pipeline.acquisition import (
     fetch_panten,
     fetch_vcf,
 )
+from flavor_pipeline.acquisition.foodatlas import fetch_foodatlas
 
 RAW_DATA_DIR = Path("raw_data")
 
@@ -184,5 +185,30 @@ def panten_raw(context: AssetExecutionContext) -> Path:
     context.log.info("Extracting Panten handbook data from PDF...")
     result_path = fetch_panten(output_dir=output_dir)
     context.log.info(f"Panten data saved to {result_path}")
+
+    return output_dir
+
+
+@asset(
+    group_name="acquisition",
+    description="Download FoodAtlas v3.2.0 knowledge graph (~1.4k foods, ~194k chemicals)",
+)
+def foodatlas_raw(context: AssetExecutionContext) -> Path:
+    """Download and extract FoodAtlas food-chemical knowledge graph.
+
+    Outputs: raw_data/Foodatlas/v3.2_20250211/*.tsv
+    """
+    output_dir = RAW_DATA_DIR / "Foodatlas"
+    data_subdir = output_dir / "v3.2_20250211"
+
+    # Check if data already exists
+    entities_file = data_subdir / "entities.tsv"
+    if entities_file.exists():
+        context.log.info(f"Using existing data in {data_subdir}")
+        return output_dir
+
+    context.log.info("Downloading FoodAtlas data from Google Drive...")
+    result_path = fetch_foodatlas(output_dir=output_dir)
+    context.log.info(f"FoodAtlas data saved to {result_path}")
 
     return output_dir

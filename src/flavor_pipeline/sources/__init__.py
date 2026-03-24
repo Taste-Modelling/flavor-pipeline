@@ -4,6 +4,7 @@ from flavor_pipeline.sources.base import BaseSource
 from flavor_pipeline.sources.bitterdb import BitterDBSource
 from flavor_pipeline.sources.fenaroli import FenaroliSource
 from flavor_pipeline.sources.flavordb2 import FlavorDB2Source
+from flavor_pipeline.sources.foodatlas import FoodAtlasFoodSource, FoodAtlasMoleculeSource
 from flavor_pipeline.sources.foodb import FooDBSource
 from flavor_pipeline.sources.fsbi import FSBISource
 from flavor_pipeline.sources.leffingwell import LeffingwellSource
@@ -19,6 +20,7 @@ SOURCES: dict[str, type[BaseSource]] = {
     "fsbi": FSBISource,
     "leffingwell": LeffingwellSource,
     "foodb": FooDBSource,
+    "foodatlas": FoodAtlasMoleculeSource,
 }
 
 __all__ = [
@@ -32,4 +34,6 @@ __all__ = [
     "FSBISource",
     "LeffingwellSource",
     "FooDBSource",
+    "FoodAtlasMoleculeSource",
+    "FoodAtlasFoodSource",
 ]
