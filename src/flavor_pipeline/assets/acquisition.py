@@ -16,6 +16,7 @@ from flavor_pipeline.acquisition import (
     fetch_panten,
     fetch_vcf,
 )
+from flavor_pipeline.acquisition.culinarydb import fetch_culinarydb
 from flavor_pipeline.acquisition.foodatlas import fetch_foodatlas
 
 RAW_DATA_DIR = Path("raw_data")
@@ -210,5 +211,29 @@ def foodatlas_raw(context: AssetExecutionContext) -> Path:
     context.log.info("Downloading FoodAtlas data from Google Drive...")
     result_path = fetch_foodatlas(output_dir=output_dir)
     context.log.info(f"FoodAtlas data saved to {result_path}")
+
+    return output_dir
+
+
+@asset(
+    group_name="acquisition",
+    description="Download CulinaryDB recipes (~46k recipes from 22 cuisines)",
+)
+def culinarydb_raw(context: AssetExecutionContext) -> Path:
+    """Download and extract CulinaryDB recipe data.
+
+    Outputs: raw_data/Culinarydb/*.csv
+    """
+    output_dir = RAW_DATA_DIR / "Culinarydb"
+
+    # Check if data already exists
+    recipe_file = output_dir / "01_Recipe_Details.csv"
+    if recipe_file.exists():
+        context.log.info(f"Using existing data in {output_dir}")
+        return output_dir
+
+    context.log.info("Downloading CulinaryDB data...")
+    result_path = fetch_culinarydb(output_dir=output_dir)
+    context.log.info(f"CulinaryDB data saved to {result_path}")
 
     return output_dir

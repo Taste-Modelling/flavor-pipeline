@@ -21,6 +21,7 @@ from flavor_pipeline.sources import (
     PantenSource,
     VCFSource,
 )
+from flavor_pipeline.sources.culinarydb import CulinaryDBRecipeSource
 from flavor_pipeline.sources.foodatlas import FoodAtlasFoodSource, FoodAtlasMoleculeSource
 
 # Output directory for Tier 1 parquet files
@@ -348,5 +349,37 @@ def foodatlas_food_tier1(context: AssetExecutionContext) -> None:
         json.dump(records, f, indent=2, default=str)
 
     context.log.info(f"Saved {len(foods)} foods to {json_path}")
+
+
+@asset(
+    group_name="tier1",
+    deps=["culinarydb_raw"],
+    description="CulinaryDB recipes parsed to Tier 1 format with ingredient composition",
+)
+def culinarydb_tier1(context: AssetExecutionContext) -> None:
+    """Parse CulinaryDB raw data to Tier 1 foods (recipes).
+
+    Depends on: culinarydb_raw
+    """
+    source = CulinaryDBRecipeSource()
+
+    errors = source.validate()
+    if errors:
+        context.log.warning(f"Validation warnings: {errors}")
+        if not (source.raw_data_dir / source.RECIPE_FILE).exists():
+            context.log.info("No CulinaryDB data available, skipping")
+            return
+
+    foods = source.parse()
+
+    # Save foods to JSON
+    json_path = TIER1_OUTPUT_DIR / "culinarydb.json"
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+
+    records = [f.model_dump(mode="json") for f in foods]
+    with open(json_path, "w") as f:
+        json.dump(records, f, indent=2, default=str)
+
+    context.log.info(f"Saved {len(foods)} recipes to {json_path}")
 
 

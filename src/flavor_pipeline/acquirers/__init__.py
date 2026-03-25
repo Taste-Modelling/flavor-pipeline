@@ -23,6 +23,7 @@ from flavor_pipeline.acquirers.base import (
     BaseAcquirer,
 )
 from flavor_pipeline.acquirers.bitterdb import BitterDBAcquirer
+from flavor_pipeline.acquirers.culinarydb import CulinaryDBAcquirer
 from flavor_pipeline.acquirers.fenaroli import FenaroliAcquirer
 from flavor_pipeline.acquirers.flavordb2 import FlavorDB2Acquirer
 from flavor_pipeline.acquirers.foodatlas import FoodAtlasAcquirer
@@ -43,6 +44,7 @@ ACQUIRER_CLASSES: dict[str, type[BaseAcquirer]] = {
     "foodb": FooDBDAcquirer,
     "usda": USDAcquirer,
     "foodatlas": FoodAtlasAcquirer,
+    "culinarydb": CulinaryDBAcquirer,
 }
 
 
@@ -70,4 +72,5 @@ __all__ = [
     "FooDBDAcquirer",
     "USDAcquirer",
     "FoodAtlasAcquirer",
+    "CulinaryDBAcquirer",
 ]

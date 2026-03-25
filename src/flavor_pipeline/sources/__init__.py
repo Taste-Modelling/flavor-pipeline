@@ -2,6 +2,7 @@
 
 from flavor_pipeline.sources.base import BaseSource
 from flavor_pipeline.sources.bitterdb import BitterDBSource
+from flavor_pipeline.sources.culinarydb import CulinaryDBRecipeSource
 from flavor_pipeline.sources.fenaroli import FenaroliSource
 from flavor_pipeline.sources.flavordb2 import FlavorDB2Source
 from flavor_pipeline.sources.foodatlas import FoodAtlasFoodSource, FoodAtlasMoleculeSource
@@ -36,4 +37,5 @@ __all__ = [
     "FooDBSource",
     "FoodAtlasMoleculeSource",
     "FoodAtlasFoodSource",
+    "CulinaryDBRecipeSource",
 ]
