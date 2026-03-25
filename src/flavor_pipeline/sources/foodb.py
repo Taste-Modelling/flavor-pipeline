@@ -54,7 +54,16 @@ class FooDBSource(BaseSource):
         return errors
 
     def parse(self) -> list[Tier1Molecule]:
-        """Parse FooDB compounds to Tier 1 format."""
+        """Parse FooDB compounds to Tier 1 format.
+
+        Note: The FooDB CSV has shifted columns due to unquoted commas in InChI
+        fields. The actual column mapping is:
+        - description -> CAS number
+        - cas_number -> SMILES
+        - moldb_inchikey -> InChI (truncated)
+        - moldb_inchi -> molecular weight
+        - moldb_smiles -> InChIKey
+        """
         compound_path = self.raw_data_dir / self.COMPOUND_FILE
         if not compound_path.exists():
             return []
@@ -76,8 +85,8 @@ class FooDBSource(BaseSource):
             if foodb_id is None:
                 continue
 
-            # Use InChIKey as molecule_id if available, else FooDB public ID
-            inchi_key = self._nonempty(row.get("moldb_inchikey"))
+            # Due to CSV column shift: InChIKey is in 'moldb_smiles' column
+            inchi_key = self._extract_inchikey(row.get("moldb_smiles"))
             if inchi_key:
                 molecule_id = f"inchikey:{inchi_key}"
             elif public_id:
@@ -85,13 +94,19 @@ class FooDBSource(BaseSource):
             else:
                 molecule_id = f"foodb:{foodb_id}"
 
-            # Get CAS number (may have multiple, take first)
-            cas = self._parse_cas(row.get("cas_number"))
+            # Due to CSV column shift: CAS is in 'description' column
+            cas = self._parse_cas(row.get("description"))
+
+            # Due to CSV column shift: SMILES is in 'cas_number' column
+            smiles = self._nonempty(row.get("cas_number"))
+
+            # Due to CSV column shift: molecular weight is in 'moldb_inchi' column
+            mol_weight = self._parse_float(row.get("moldb_inchi"))
 
             # Get flavor descriptors for this compound
             flavor_descriptors = flavor_map.get(foodb_id, [])
 
-            # Parse common/IUPAC names
+            # Parse common/IUPAC names (these columns are not shifted)
             name = self._nonempty(row.get("name"))
             iupac = self._nonempty(row.get("moldb_iupac"))
 
@@ -100,37 +115,14 @@ class FooDBSource(BaseSource):
                 _ingest_metadata=ingest_meta,
                 _sources={self.name: source_meta},
                 cas=self._av(cas) if cas else None,
-                smiles=self._av(self._nonempty(row.get("moldb_smiles")))
-                if self._nonempty(row.get("moldb_smiles"))
-                else None,
-                inchi=self._av(self._nonempty(row.get("moldb_inchi")))
-                if self._nonempty(row.get("moldb_inchi"))
-                else None,
+                smiles=self._av(smiles) if smiles else None,
                 inchi_key=self._av(inchi_key) if inchi_key else None,
                 name=self._av(name) if name else None,
                 iupac_name=self._av(iupac) if iupac else None,
-                molecular_weight=self._av(
-                    self._parse_float(row.get("moldb_mono_mass") or row.get("moldb_average_mass")),
-                    unit="g/mol",
-                )
-                if self._parse_float(row.get("moldb_mono_mass") or row.get("moldb_average_mass"))
-                else None,
-                molecular_formula=self._av(self._nonempty(row.get("moldb_formula")))
-                if self._nonempty(row.get("moldb_formula"))
-                else None,
+                molecular_weight=self._av(mol_weight, unit="g/mol") if mol_weight else None,
                 flavor_descriptors=self._av(flavor_descriptors) if flavor_descriptors else None,
                 extra={
                     "foodb_id": self._av(public_id or foodb_id),
-                    **(
-                        {"kingdom": self._av(row.get("kingdom"))}
-                        if self._nonempty(row.get("kingdom"))
-                        else {}
-                    ),
-                    **(
-                        {"super_class": self._av(row.get("super_class"))}
-                        if self._nonempty(row.get("super_class"))
-                        else {}
-                    ),
                 },
             )
             molecules.append(mol)
@@ -149,6 +141,23 @@ class FooDBSource(BaseSource):
         parts = cas.split("-")
         if len(parts) == 3 and all(p.isdigit() for p in parts):
             return cas
+        return None
+
+    def _extract_inchikey(self, value: object) -> str | None:
+        """Extract and validate InChIKey from a value.
+
+        InChIKey format: 14 uppercase letters, hyphen, 10 uppercase letters,
+        hyphen, 1 uppercase letter (e.g., XXXXXXXXXXXXXX-XXXXXXXXXX-X).
+        """
+        import re
+
+        if value is None or pd.isna(value) or value == "":
+            return None
+
+        val = str(value).strip()
+        # InChIKey pattern
+        if re.match(r"^[A-Z]{14}-[A-Z]{10}-[A-Z]$", val):
+            return val
         return None
 
     def _load_flavor_map(self) -> dict[str, list[str]]:

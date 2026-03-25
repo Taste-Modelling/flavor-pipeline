@@ -18,6 +18,7 @@ from flavor_pipeline.acquisition import (
 )
 from flavor_pipeline.acquisition.culinarydb import fetch_culinarydb
 from flavor_pipeline.acquisition.foodatlas import fetch_foodatlas
+from flavor_pipeline.acquisition.foodb import fetch_foodb
 from flavor_pipeline.acquisition.winesensed import fetch_winesensed
 
 RAW_DATA_DIR = Path("raw_data")
@@ -187,6 +188,31 @@ def panten_raw(context: AssetExecutionContext) -> Path:
     context.log.info("Extracting Panten handbook data from PDF...")
     result_path = fetch_panten(output_dir=output_dir)
     context.log.info(f"Panten data saved to {result_path}")
+
+    return output_dir
+
+
+@asset(
+    group_name="acquisition",
+    description="Download FooDB food compound data (~26k compounds with flavors)",
+)
+def foodb_raw(context: AssetExecutionContext) -> Path:
+    """Download and extract FooDB CSV data archive.
+
+    Outputs: raw_data/FooDB/foodb_2020_04_07_csv/*.csv
+    """
+    output_dir = RAW_DATA_DIR / "FooDB"
+    csv_dir = output_dir / "foodb_2020_04_07_csv"
+
+    # Check if data already exists
+    compound_file = csv_dir / "Compound.csv"
+    if compound_file.exists():
+        context.log.info(f"Using existing data in {csv_dir}")
+        return output_dir
+
+    context.log.info("Downloading FooDB data...")
+    result_path = fetch_foodb(output_dir=output_dir)
+    context.log.info(f"FooDB data saved to {result_path}")
 
     return output_dir
 

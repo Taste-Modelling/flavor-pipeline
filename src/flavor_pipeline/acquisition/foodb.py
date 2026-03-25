@@ -18,7 +18,8 @@ import requests
 DEFAULT_OUTPUT_DIR = Path("raw_data/FooDB")
 
 # FooDB download URL for the 2020 release
-FOODB_URL = "https://foodb.ca/public/system/downloads/foodb_2020_04_07_csv.tar.gz"
+# Note: The filename uses 2020_4_7 (not 2020_04_07)
+FOODB_URL = "https://foodb.ca/public/system/downloads/foodb_2020_4_7_csv.tar.gz"
 
 # Request configuration
 HEADERS = {
@@ -32,7 +33,7 @@ def download_foodb_archive(output_dir: Path) -> Path:
     Returns:
         Path to the downloaded archive.
     """
-    archive_path = output_dir / "foodb_2020_04_07_csv.tar.gz"
+    archive_path = output_dir / "foodb_2020_4_7_csv.tar.gz"
 
     if archive_path.exists():
         print(f"Archive already exists: {archive_path}")
@@ -59,7 +60,7 @@ def download_foodb_archive(output_dir: Path) -> Path:
 
 
 def extract_foodb_archive(archive_path: Path, output_dir: Path) -> Path:
-    """Extract the FooDB tar.gz archive.
+    """Extract the FooDB tar archive.
 
     Returns:
         Path to the extracted directory.
@@ -72,8 +73,14 @@ def extract_foodb_archive(archive_path: Path, output_dir: Path) -> Path:
 
     print(f"Extracting archive to {output_dir}...")
 
-    with tarfile.open(archive_path, "r:gz") as tar:
-        tar.extractall(path=output_dir, filter="data")
+    # Try gzip first, fall back to plain tar
+    try:
+        with tarfile.open(archive_path, "r:gz") as tar:
+            tar.extractall(path=output_dir, filter="data")
+    except tarfile.ReadError:
+        # File may be plain tar despite .gz extension
+        with tarfile.open(archive_path, "r:") as tar:
+            tar.extractall(path=output_dir, filter="data")
 
     print(f"Extracted to: {extract_dir}")
     return extract_dir
