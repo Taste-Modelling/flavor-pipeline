@@ -23,6 +23,8 @@ from flavor_pipeline.sources import (
 )
 from flavor_pipeline.sources.culinarydb import CulinaryDBRecipeSource
 from flavor_pipeline.sources.foodatlas import FoodAtlasFoodSource, FoodAtlasMoleculeSource
+from flavor_pipeline.sources.sweetenersdb import SweetenersDBSource
+from flavor_pipeline.sources.umamidb import UmamiDBSource
 from flavor_pipeline.sources.winesensed import WineSensedSource
 
 # Output directory for Tier 1 parquet files
@@ -416,3 +418,62 @@ def winesensed_tier1(context: AssetExecutionContext) -> None:
     context.log.info(f"Saved {len(foods)} wines to {json_path}")
 
 
+@asset(
+    group_name="tier1",
+    deps=["umamidb_raw"],
+    description="UmamiDB foods parsed to Tier 1 format with amino acid/nucleotide data",
+)
+def umamidb_tier1(context: AssetExecutionContext) -> None:
+    """Parse UmamiDB raw data to Tier 1 foods.
+
+    Depends on: umamidb_raw
+    """
+    source = UmamiDBSource()
+
+    errors = source.validate()
+    if errors:
+        context.log.warning(f"Validation warnings: {errors}")
+        if not (source.raw_data_dir / source.FOODS_FILE).exists():
+            context.log.info("No UmamiDB data available, skipping")
+            return
+
+    foods = source.parse()
+
+    # Save foods to JSON
+    json_path = TIER1_OUTPUT_DIR / "umamidb.json"
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+
+    records = [f.model_dump(mode="json") for f in foods]
+    with open(json_path, "w") as f:
+        json.dump(records, f, indent=2, default=str)
+
+    context.log.info(f"Saved {len(foods)} foods to {json_path}")
+
+
+@asset(
+    group_name="tier1",
+    deps=["sweetenersdb_raw"],
+    description="SweetenersDB molecules parsed to Tier 1 format with sweetness data",
+)
+def sweetenersdb_tier1(context: AssetExecutionContext) -> None:
+    """Parse SweetenersDB raw data to Tier 1 molecules.
+
+    Depends on: sweetenersdb_raw
+    """
+    source = SweetenersDBSource()
+
+    errors = source.validate()
+    if errors:
+        context.log.warning(f"Validation warnings: {errors}")
+        if not (source.raw_data_dir / source.SWEETENERS_FILE).exists():
+            context.log.info("No SweetenersDB data available, skipping")
+            return
+
+    molecules = source.parse()
+    parquet_path = TIER1_OUTPUT_DIR / "sweetenersdb.parquet"
+    json_path = TIER1_OUTPUT_DIR / "sweetenersdb.json"
+
+    _save_molecules_to_parquet(molecules, parquet_path)
+    count = _save_molecules_to_json(molecules, json_path)
+
+    context.log.info(f"Saved {count} molecules to {parquet_path} and {json_path}")

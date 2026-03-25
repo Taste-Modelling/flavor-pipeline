@@ -19,6 +19,8 @@ from flavor_pipeline.acquisition import (
 from flavor_pipeline.acquisition.culinarydb import fetch_culinarydb
 from flavor_pipeline.acquisition.foodatlas import fetch_foodatlas
 from flavor_pipeline.acquisition.foodb import fetch_foodb
+from flavor_pipeline.acquisition.sweetenersdb import fetch_sweetenersdb
+from flavor_pipeline.acquisition.umamidb import fetch_umamidb
 from flavor_pipeline.acquisition.winesensed import fetch_winesensed
 
 RAW_DATA_DIR = Path("raw_data")
@@ -286,5 +288,53 @@ def winesensed_raw(context: AssetExecutionContext) -> Path:
     context.log.info("Downloading WineSensed data from Hugging Face...")
     result_path = fetch_winesensed(output_dir=output_dir)
     context.log.info(f"WineSensed data saved to {result_path}")
+
+    return output_dir
+
+
+@asset(
+    group_name="acquisition",
+    description="Download UmamiDB food amino acid/nucleotide data (~700 foods)",
+)
+def umamidb_raw(context: AssetExecutionContext) -> Path:
+    """Download UmamiDB food data from API endpoint.
+
+    Outputs: raw_data/Umamidb/foods.json
+    """
+    output_dir = RAW_DATA_DIR / "Umamidb"
+
+    # Check if data already exists
+    foods_file = output_dir / "foods.json"
+    if foods_file.exists():
+        context.log.info(f"Using existing data in {output_dir}")
+        return output_dir
+
+    context.log.info("Downloading UmamiDB data...")
+    result_path = fetch_umamidb(output_dir=output_dir)
+    context.log.info(f"UmamiDB data saved to {result_path}")
+
+    return output_dir
+
+
+@asset(
+    group_name="acquisition",
+    description="Download SweetenersDB sweet compound data (~316 molecules)",
+)
+def sweetenersdb_raw(context: AssetExecutionContext) -> Path:
+    """Download SweetenersDB from GitHub.
+
+    Outputs: raw_data/Sweetenersdb/sweeteners.csv
+    """
+    output_dir = RAW_DATA_DIR / "Sweetenersdb"
+
+    # Check if data already exists
+    csv_file = output_dir / "sweeteners.csv"
+    if csv_file.exists():
+        context.log.info(f"Using existing data in {output_dir}")
+        return output_dir
+
+    context.log.info("Downloading SweetenersDB data from GitHub...")
+    result_path = fetch_sweetenersdb(output_dir=output_dir)
+    context.log.info(f"SweetenersDB data saved to {result_path}")
 
     return output_dir

@@ -96,6 +96,7 @@ def _save_tier2_to_json(molecules: list, output_path: Path) -> int:
         "flavordb2_tier1",
         "fsbi_tier1",
         "panten_tier1",
+        "sweetenersdb_tier1",
         "vcf_tier1",
         "foodb_tier1",
         "leffingwell_tier1",
