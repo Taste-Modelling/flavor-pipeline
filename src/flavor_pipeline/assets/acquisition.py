@@ -18,6 +18,7 @@ from flavor_pipeline.acquisition import (
 )
 from flavor_pipeline.acquisition.culinarydb import fetch_culinarydb
 from flavor_pipeline.acquisition.foodatlas import fetch_foodatlas
+from flavor_pipeline.acquisition.winesensed import fetch_winesensed
 
 RAW_DATA_DIR = Path("raw_data")
 
@@ -235,5 +236,29 @@ def culinarydb_raw(context: AssetExecutionContext) -> Path:
     context.log.info("Downloading CulinaryDB data...")
     result_path = fetch_culinarydb(output_dir=output_dir)
     context.log.info(f"CulinaryDB data saved to {result_path}")
+
+    return output_dir
+
+
+@asset(
+    group_name="acquisition",
+    description="Download WineSensed dataset (~350k wines, 824k reviews with flavor data)",
+)
+def winesensed_raw(context: AssetExecutionContext) -> Path:
+    """Download WineSensed wine data from Hugging Face.
+
+    Outputs: raw_data/WineSensed/*.csv
+    """
+    output_dir = RAW_DATA_DIR / "WineSensed"
+
+    # Check if data already exists
+    wines_file = output_dir / "images_reviews_attributes.csv"
+    if wines_file.exists():
+        context.log.info(f"Using existing data in {output_dir}")
+        return output_dir
+
+    context.log.info("Downloading WineSensed data from Hugging Face...")
+    result_path = fetch_winesensed(output_dir=output_dir)
+    context.log.info(f"WineSensed data saved to {result_path}")
 
     return output_dir

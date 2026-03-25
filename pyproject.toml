@@ -15,6 +15,8 @@ dependencies = [
     "lxml>=5.0.0",
     "pymupdf>=1.23.0",
     "gdown>=5.0.0",
+    "datasets>=2.14.0",
+    "huggingface-hub>=0.20.0",
 ]
 
 [project.optional-dependencies]

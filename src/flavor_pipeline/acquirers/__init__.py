@@ -32,6 +32,7 @@ from flavor_pipeline.acquirers.fsbi import FSBIAcquirer
 from flavor_pipeline.acquirers.panten import PantenAcquirer
 from flavor_pipeline.acquirers.usda import USDAcquirer
 from flavor_pipeline.acquirers.vcf import VCFAcquirer
+from flavor_pipeline.acquirers.winesensed import WineSensedAcquirer
 
 # Registry of all acquirers
 ACQUIRER_CLASSES: dict[str, type[BaseAcquirer]] = {
@@ -45,6 +46,7 @@ ACQUIRER_CLASSES: dict[str, type[BaseAcquirer]] = {
     "usda": USDAcquirer,
     "foodatlas": FoodAtlasAcquirer,
     "culinarydb": CulinaryDBAcquirer,
+    "winesensed": WineSensedAcquirer,
 }
 
 
@@ -73,4 +75,5 @@ __all__ = [
     "USDAcquirer",
     "FoodAtlasAcquirer",
     "CulinaryDBAcquirer",
+    "WineSensedAcquirer",
 ]

@@ -15,6 +15,7 @@ from flavor_pipeline.assets.acquisition import (
     fsbi_raw,
     panten_raw,
     vcf_raw,
+    winesensed_raw,
 )
 from flavor_pipeline.assets.tier1 import (
     bitterdb_tier1,
@@ -27,6 +28,7 @@ from flavor_pipeline.assets.tier1 import (
     leffingwell_tier1,
     panten_tier1,
     vcf_tier1,
+    winesensed_tier1,
 )
 from flavor_pipeline.assets.tier2 import merged_tier2
 
@@ -40,6 +42,7 @@ __all__ = [
     "panten_raw",
     "foodatlas_raw",
     "culinarydb_raw",
+    "winesensed_raw",
     # Tier 1 assets
     "flavordb2_tier1",
     "bitterdb_tier1",
@@ -51,6 +54,7 @@ __all__ = [
     "foodatlas_tier1",
     "foodatlas_food_tier1",
     "culinarydb_tier1",
+    "winesensed_tier1",
     # Tier 2 assets
     "merged_tier2",
 ]

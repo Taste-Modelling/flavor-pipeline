@@ -23,6 +23,7 @@ from flavor_pipeline.sources import (
 )
 from flavor_pipeline.sources.culinarydb import CulinaryDBRecipeSource
 from flavor_pipeline.sources.foodatlas import FoodAtlasFoodSource, FoodAtlasMoleculeSource
+from flavor_pipeline.sources.winesensed import WineSensedSource
 
 # Output directory for Tier 1 parquet files
 TIER1_OUTPUT_DIR = Path("data/tier1")
@@ -381,5 +382,37 @@ def culinarydb_tier1(context: AssetExecutionContext) -> None:
         json.dump(records, f, indent=2, default=str)
 
     context.log.info(f"Saved {len(foods)} recipes to {json_path}")
+
+
+@asset(
+    group_name="tier1",
+    deps=["winesensed_raw"],
+    description="WineSensed wines parsed to Tier 1 format with flavor reviews",
+)
+def winesensed_tier1(context: AssetExecutionContext) -> None:
+    """Parse WineSensed raw data to Tier 1 foods (wines).
+
+    Depends on: winesensed_raw
+    """
+    source = WineSensedSource()
+
+    errors = source.validate()
+    if errors:
+        context.log.warning(f"Validation warnings: {errors}")
+        if not (source.raw_data_dir / source.WINES_FILE).exists():
+            context.log.info("No WineSensed data available, skipping")
+            return
+
+    foods = source.parse()
+
+    # Save wines to JSON
+    json_path = TIER1_OUTPUT_DIR / "winesensed.json"
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+
+    records = [f.model_dump(mode="json") for f in foods]
+    with open(json_path, "w") as f:
+        json.dump(records, f, indent=2, default=str)
+
+    context.log.info(f"Saved {len(foods)} wines to {json_path}")
 
 

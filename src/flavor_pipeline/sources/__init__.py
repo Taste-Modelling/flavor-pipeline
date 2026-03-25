@@ -11,6 +11,7 @@ from flavor_pipeline.sources.fsbi import FSBISource
 from flavor_pipeline.sources.leffingwell import LeffingwellSource
 from flavor_pipeline.sources.panten import PantenSource
 from flavor_pipeline.sources.vcf import VCFSource
+from flavor_pipeline.sources.winesensed import WineSensedSource
 
 SOURCES: dict[str, type[BaseSource]] = {
     "flavordb2": FlavorDB2Source,
@@ -38,4 +39,5 @@ __all__ = [
     "FoodAtlasMoleculeSource",
     "FoodAtlasFoodSource",
     "CulinaryDBRecipeSource",
+    "WineSensedSource",
 ]
