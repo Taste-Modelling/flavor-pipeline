@@ -22,12 +22,22 @@ TIER1_INPUT_DIR = Path("data/tier1")
 
 
 def _load_tier1_molecules() -> list[Tier1Molecule]:
-    """Load all Tier 1 molecules from JSON files."""
+    """Load all Tier 1 molecules from JSON files.
+
+    Only loads molecule files, skipping food files (which use Tier1Food schema).
+    """
     all_molecules = []
 
+    # Files that contain Tier1Food, not Tier1Molecule
+    food_files = {
+        "culinarydb.json",
+        "foodatlas_food.json",
+        "winesensed.json",
+        "consolidated.json",  # Old consolidated file
+    }
+
     for source_file in TIER1_INPUT_DIR.glob("*.json"):
-        # Skip the old consolidated file if it exists
-        if source_file.name == "consolidated.json":
+        if source_file.name in food_files:
             continue
 
         with open(source_file) as f:
