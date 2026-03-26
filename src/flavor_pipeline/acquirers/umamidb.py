@@ -22,10 +22,6 @@ class UmamiDBAcquirer(BaseAcquirer):
     url = "https://www.umamiinfo.com/umamidb/"
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "Umamidb"
-
-    @property
     def output_files(self) -> list[str]:
         return ["foods.json"]
 

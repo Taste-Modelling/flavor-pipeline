@@ -3,16 +3,19 @@
 from flavor_pipeline.sources.base import BaseSource
 from flavor_pipeline.sources.bitterdb import BitterDBSource
 from flavor_pipeline.sources.culinarydb import CulinaryDBRecipeSource
+from flavor_pipeline.sources.duke_phytochem import DukePhytochemSource
+from flavor_pipeline.sources.fao_infoods import FAOINFOODSSource
 from flavor_pipeline.sources.fenaroli import FenaroliSource
 from flavor_pipeline.sources.flavordb2 import FlavorDB2Source
 from flavor_pipeline.sources.foodatlas import FoodAtlasFoodSource, FoodAtlasMoleculeSource
 from flavor_pipeline.sources.foodb import FooDBSource
 from flavor_pipeline.sources.fsbi import FSBISource
 from flavor_pipeline.sources.leffingwell import LeffingwellSource
+from flavor_pipeline.sources.metabolights import MetaboLightsSource
 from flavor_pipeline.sources.panten import PantenSource
-from flavor_pipeline.sources.vcf import VCFSource
 from flavor_pipeline.sources.sweetenersdb import SweetenersDBSource
 from flavor_pipeline.sources.umamidb import UmamiDBSource
+from flavor_pipeline.sources.vcf import VCFSource
 from flavor_pipeline.sources.winesensed import WineSensedSource
 
 SOURCES: dict[str, type[BaseSource]] = {
@@ -44,4 +47,7 @@ __all__ = [
     "SweetenersDBSource",
     "UmamiDBSource",
     "WineSensedSource",
+    "FAOINFOODSSource",
+    "DukePhytochemSource",
+    "MetaboLightsSource",
 ]

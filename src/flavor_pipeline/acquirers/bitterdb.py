@@ -17,10 +17,6 @@ class BitterDBAcquirer(BaseAcquirer):
     url = "https://bitterdb.agri.huji.ac.il/"
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "BitterDB"
-
-    @property
     def output_files(self) -> list[str]:
         return [
             "BitterCompoundsPropA_2024.csv",

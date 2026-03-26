@@ -323,7 +323,7 @@ def scrape_fsbi_data(output_dir: Path) -> Path:
     print(f"Saved: {output_csv}", flush=True)
 
     # Print statistics
-    print(f"\n--- Statistics ---", flush=True)
+    print("\n--- Statistics ---", flush=True)
     with open(output_csv, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         compounds = list(reader)

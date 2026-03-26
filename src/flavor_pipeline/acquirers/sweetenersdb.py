@@ -25,10 +25,6 @@ class SweetenersDBAcquirer(BaseAcquirer):
     url = "https://github.com/chemosim-lab/SweetenersDB"
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "Sweetenersdb"
-
-    @property
     def output_files(self) -> list[str]:
         return ["sweeteners.csv"]
 

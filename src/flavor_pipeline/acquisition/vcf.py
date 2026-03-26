@@ -185,7 +185,7 @@ def scrape_vcf_data(output_dir: Path) -> Path:
     print(f"Saved: {output_csv}")
 
     # Print statistics
-    print(f"\n--- Statistics ---")
+    print("\n--- Statistics ---")
     print(f"Total unique compounds: {len(unique_compounds)}")
     with_cas = sum(1 for c in unique_compounds if c["cas"])
     print(f"With CAS number: {with_cas}")

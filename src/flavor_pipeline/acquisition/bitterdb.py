@@ -99,13 +99,13 @@ def fetch_bitterdb(output_dir: Path = DEFAULT_OUTPUT_DIR) -> Path:
 
         time.sleep(REQUEST_DELAY)
 
-    print(f"\n--- Summary ---")
+    print("\n--- Summary ---")
     print(f"Downloaded: {success_count}/{len(CSV_FILES)} files")
     print(f"Total size: {total_bytes:,} bytes ({total_bytes / 1024 / 1024:.2f} MB)")
     print(f"Output directory: {output_dir}")
 
     # Show file details
-    print(f"\n--- Files ---")
+    print("\n--- Files ---")
     for filename in CSV_FILES:
         file_path = output_dir / filename
         if file_path.exists():

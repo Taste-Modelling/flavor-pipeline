@@ -18,10 +18,6 @@ class USDAcquirer(BaseAcquirer):
     url = "https://fdc.nal.usda.gov/download-datasets"
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "USDA"
-
-    @property
     def csv_dir(self) -> Path:
         """Directory containing extracted CSV files."""
         return self.output_dir / "FoodData_Central_csv_2025-12-18"

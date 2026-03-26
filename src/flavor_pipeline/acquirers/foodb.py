@@ -17,10 +17,6 @@ class FooDBDAcquirer(BaseAcquirer):
     url = "https://foodb.ca/"
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "FooDB"
-
-    @property
     def csv_dir(self) -> Path:
         """Directory containing extracted CSV files."""
         return self.output_dir / "foodb_2020_04_07_csv"

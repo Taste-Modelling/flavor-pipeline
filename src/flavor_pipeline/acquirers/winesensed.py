@@ -20,10 +20,6 @@ class WineSensedAcquirer(BaseAcquirer):
     url = "https://huggingface.co/datasets/Dakhoo/L2T-NeurIPS-2023"
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "WineSensed"
-
-    @property
     def output_files(self) -> list[str]:
         return [
             "images_reviews_attributes.csv",

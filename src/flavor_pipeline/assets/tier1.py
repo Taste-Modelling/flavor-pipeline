@@ -22,7 +22,10 @@ from flavor_pipeline.sources import (
     VCFSource,
 )
 from flavor_pipeline.sources.culinarydb import CulinaryDBRecipeSource
+from flavor_pipeline.sources.duke_phytochem import DukePhytochemSource
+from flavor_pipeline.sources.fao_infoods import FAOINFOODSSource
 from flavor_pipeline.sources.foodatlas import FoodAtlasFoodSource, FoodAtlasMoleculeSource
+from flavor_pipeline.sources.metabolights import MetaboLightsSource
 from flavor_pipeline.sources.sweetenersdb import SweetenersDBSource
 from flavor_pipeline.sources.umamidb import UmamiDBSource
 from flavor_pipeline.sources.winesensed import WineSensedSource
@@ -472,6 +475,96 @@ def sweetenersdb_tier1(context: AssetExecutionContext) -> None:
     molecules = source.parse()
     parquet_path = TIER1_OUTPUT_DIR / "sweetenersdb.parquet"
     json_path = TIER1_OUTPUT_DIR / "sweetenersdb.json"
+
+    _save_molecules_to_parquet(molecules, parquet_path)
+    count = _save_molecules_to_json(molecules, json_path)
+
+    context.log.info(f"Saved {count} molecules to {parquet_path} and {json_path}")
+
+
+@asset(
+    group_name="tier1",
+    deps=["fao_infoods_raw"],
+    description="FAO/INFOODS foods parsed to Tier 1 format with nutrient composition",
+)
+def fao_infoods_tier1(context: AssetExecutionContext) -> None:
+    """Parse FAO/INFOODS raw data to Tier 1 foods.
+
+    Depends on: fao_infoods_raw
+    """
+    source = FAOINFOODSSource()
+
+    errors = source.validate()
+    if errors:
+        context.log.warning(f"Validation warnings: {errors}")
+        if not (source.raw_data_dir / source.ANFOOD_FILE).exists():
+            context.log.info("No FAO/INFOODS data available, skipping")
+            return
+
+    foods = source.parse()
+
+    # Save foods to JSON
+    json_path = TIER1_OUTPUT_DIR / "fao_infoods.json"
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+
+    records = [f.model_dump(mode="json") for f in foods]
+    with open(json_path, "w") as f:
+        json.dump(records, f, indent=2, default=str)
+
+    context.log.info(f"Saved {len(foods)} foods to {json_path}")
+
+
+@asset(
+    group_name="tier1",
+    deps=["duke_phytochem_raw"],
+    description="Dr. Duke's phytochemicals parsed to Tier 1 format with biological activities",
+)
+def duke_phytochem_tier1(context: AssetExecutionContext) -> None:
+    """Parse Dr. Duke's Phytochemical data to Tier 1 molecules.
+
+    Depends on: duke_phytochem_raw
+    """
+    source = DukePhytochemSource()
+
+    errors = source.validate()
+    if errors:
+        context.log.warning(f"Validation warnings: {errors}")
+        if not (source.raw_data_dir / source.CHEMICALS_FILE).exists():
+            context.log.info("No Duke Phytochem data available, skipping")
+            return
+
+    molecules = source.parse()
+    parquet_path = TIER1_OUTPUT_DIR / "duke_phytochem.parquet"
+    json_path = TIER1_OUTPUT_DIR / "duke_phytochem.json"
+
+    _save_molecules_to_parquet(molecules, parquet_path)
+    count = _save_molecules_to_json(molecules, json_path)
+
+    context.log.info(f"Saved {count} molecules to {parquet_path} and {json_path}")
+
+
+@asset(
+    group_name="tier1",
+    deps=["metabolights_raw"],
+    description="MetaboLights metabolites parsed to Tier 1 format with chemical identifiers",
+)
+def metabolights_tier1(context: AssetExecutionContext) -> None:
+    """Parse MetaboLights raw data to Tier 1 molecules.
+
+    Depends on: metabolights_raw
+    """
+    source = MetaboLightsSource()
+
+    errors = source.validate()
+    if errors:
+        context.log.warning(f"Validation warnings: {errors}")
+        if not (source.raw_data_dir / source.COMPOUNDS_FILE).exists():
+            context.log.info("No MetaboLights data available, skipping")
+            return
+
+    molecules = source.parse()
+    parquet_path = TIER1_OUTPUT_DIR / "metabolights.parquet"
+    json_path = TIER1_OUTPUT_DIR / "metabolights.json"
 
     _save_molecules_to_parquet(molecules, parquet_path)
     count = _save_molecules_to_json(molecules, json_path)

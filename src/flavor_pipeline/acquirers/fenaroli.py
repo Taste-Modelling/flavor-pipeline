@@ -16,10 +16,6 @@ class FenaroliAcquirer(BaseAcquirer):
     url = None  # PDF extraction, no URL
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "Fenaroli"
-
-    @property
     def output_files(self) -> list[str]:
         return ["flavor_substances.csv"]
 

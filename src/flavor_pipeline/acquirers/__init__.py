@@ -45,17 +45,17 @@ from flavor_pipeline.acquirers.bitterdb import BitterDBAcquirer
 from flavor_pipeline.acquirers.culinarydb import CulinaryDBAcquirer
 from flavor_pipeline.acquirers.duke_phytochem import DukePhytochemAcquirer
 from flavor_pipeline.acquirers.fao_infoods import FAOINFOODSAcquirer
-from flavor_pipeline.acquirers.metabolights import MetaboLightsAcquirer
 from flavor_pipeline.acquirers.fenaroli import FenaroliAcquirer
 from flavor_pipeline.acquirers.flavordb2 import FlavorDB2Acquirer
 from flavor_pipeline.acquirers.foodatlas import FoodAtlasAcquirer
 from flavor_pipeline.acquirers.foodb import FooDBDAcquirer
 from flavor_pipeline.acquirers.fsbi import FSBIAcquirer
+from flavor_pipeline.acquirers.metabolights import MetaboLightsAcquirer
 from flavor_pipeline.acquirers.panten import PantenAcquirer
-from flavor_pipeline.acquirers.usda import USDAcquirer
-from flavor_pipeline.acquirers.vcf import VCFAcquirer
 from flavor_pipeline.acquirers.sweetenersdb import SweetenersDBAcquirer
 from flavor_pipeline.acquirers.umamidb import UmamiDBAcquirer
+from flavor_pipeline.acquirers.usda import USDAcquirer
+from flavor_pipeline.acquirers.vcf import VCFAcquirer
 from flavor_pipeline.acquirers.winesensed import WineSensedAcquirer
 
 # Registry of all acquirers

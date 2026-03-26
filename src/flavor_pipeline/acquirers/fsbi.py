@@ -17,10 +17,6 @@ class FSBIAcquirer(BaseAcquirer):
     url = "https://fsbi-db.de/"
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "FSBI"
-
-    @property
     def output_files(self) -> list[str]:
         return ["compounds.csv"]
 

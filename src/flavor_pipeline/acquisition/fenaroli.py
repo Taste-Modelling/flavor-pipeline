@@ -163,10 +163,10 @@ def extract_fenaroli_data(input_pdf: Path, output_dir: Path) -> tuple[Path, Path
         # If still problematic, try the running footer
         if len(raw_name) > 100 or (raw_name and raw_name[0].islower()):
             end_block = entry_after[-600:] if len(entry_after) > 600 else entry_after
-            end_lines = [l.strip() for l in end_block.strip().split("\n") if l.strip()]
-            for l in reversed(end_lines):
-                if len(l) > 3 and not re.match(r"^\d+$", l) and l[0].isupper():
-                    raw_name = l
+            end_lines = [line.strip() for line in end_block.strip().split("\n") if line.strip()]
+            for line in reversed(end_lines):
+                if len(line) > 3 and not re.match(r"^\d+$", line) and line[0].isupper():
+                    raw_name = line
                     break
 
         entry["Name"] = raw_name

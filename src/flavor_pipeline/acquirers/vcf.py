@@ -16,10 +16,6 @@ class VCFAcquirer(BaseAcquirer):
     url = "https://www.vcf-online.nl/"
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "VCF"
-
-    @property
     def output_files(self) -> list[str]:
         return ["compounds.csv"]
 

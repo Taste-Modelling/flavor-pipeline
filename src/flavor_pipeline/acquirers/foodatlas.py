@@ -21,10 +21,6 @@ class FoodAtlasAcquirer(BaseAcquirer):
     DATA_SUBDIR = "v3.2_20250211"
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "Foodatlas"
-
-    @property
     def data_dir(self) -> Path:
         """Directory containing the actual data files (versioned subdirectory)."""
         return self.output_dir / self.DATA_SUBDIR

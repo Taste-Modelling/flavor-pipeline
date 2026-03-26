@@ -17,11 +17,6 @@ class FlavorDB2Acquirer(BaseAcquirer):
     url = "https://cosylab.iiitd.edu.in/flavordb2/"
 
     @property
-    def output_dir(self) -> Path:
-        # FlavorDB2 uses capital DB in directory name
-        return self._raw_data_base / "FlavorDB2"
-
-    @property
     def output_files(self) -> list[str]:
         return ["molecules.csv"]
 

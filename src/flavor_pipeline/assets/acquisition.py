@@ -17,8 +17,11 @@ from flavor_pipeline.acquisition import (
     fetch_vcf,
 )
 from flavor_pipeline.acquisition.culinarydb import fetch_culinarydb
+from flavor_pipeline.acquisition.duke_phytochem import fetch_duke_phytochem
+from flavor_pipeline.acquisition.fao_infoods import fetch_fao_infoods
 from flavor_pipeline.acquisition.foodatlas import fetch_foodatlas
 from flavor_pipeline.acquisition.foodb import fetch_foodb
+from flavor_pipeline.acquisition.metabolights import fetch_metabolights
 from flavor_pipeline.acquisition.sweetenersdb import fetch_sweetenersdb
 from flavor_pipeline.acquisition.umamidb import fetch_umamidb
 from flavor_pipeline.acquisition.winesensed import fetch_winesensed
@@ -336,5 +339,100 @@ def sweetenersdb_raw(context: AssetExecutionContext) -> Path:
     context.log.info("Downloading SweetenersDB data from GitHub...")
     result_path = fetch_sweetenersdb(output_dir=output_dir)
     context.log.info(f"SweetenersDB data saved to {result_path}")
+
+    return output_dir
+
+
+@asset(
+    group_name="acquisition",
+    description="Download FAO/INFOODS food composition databases (5 databases)",
+)
+def fao_infoods_raw(context: AssetExecutionContext) -> Path:
+    """Download FAO/INFOODS food composition data.
+
+    Downloads multiple databases:
+    - AnFooD 2.0: Analytical Food Composition Database
+    - uFiSh 1.0: Global fish/seafood nutrient database
+    - uPulses 1.0: Global pulse nutrient database
+    - BioFoodComp 4.0: Food biodiversity repository
+    - Density Database v2.0: Food density values
+
+    Outputs: raw_data/FAO_INFOODS/*.xlsx
+    """
+    output_dir = RAW_DATA_DIR / "FAO_INFOODS"
+
+    # Check if data already exists (at least one main file)
+    anfood_file = output_dir / "AnFooD2.0.xlsx"
+    if anfood_file.exists():
+        context.log.info(f"Using existing data in {output_dir}")
+        return output_dir
+
+    context.log.info("Downloading FAO/INFOODS databases...")
+    result_path = fetch_fao_infoods(output_dir=output_dir)
+    context.log.info(f"FAO/INFOODS data saved to {result_path}")
+
+    return output_dir
+
+
+@asset(
+    group_name="acquisition",
+    description="Download Dr. Duke's Phytochemical database (~29k chemicals with activities)",
+)
+def duke_phytochem_raw(context: AssetExecutionContext) -> Path:
+    """Download Dr. Duke's Phytochemical and Ethnobotanical database.
+
+    Downloads bulk CSV archive containing:
+    - ~29,000 phytochemicals with CAS numbers
+    - ~2,400 biological activities
+    - ~29,000 chemical-activity relationships
+    - ~104,000 chemical-plant relationships
+
+    Outputs: raw_data/DukePhytochem/*.csv
+    """
+    output_dir = RAW_DATA_DIR / "DukePhytochem"
+
+    # Check if data already exists
+    chemicals_file = output_dir / "CHEMICALS.csv"
+    if chemicals_file.exists():
+        context.log.info(f"Using existing data in {output_dir}")
+        return output_dir
+
+    context.log.info("Downloading Dr. Duke's Phytochemical database...")
+    result_path = fetch_duke_phytochem(output_dir=output_dir)
+    context.log.info(f"Duke Phytochem data saved to {result_path}")
+
+    return output_dir
+
+
+@asset(
+    group_name="acquisition",
+    description="Download MetaboLights compound data (~33k metabolites)",
+)
+def metabolights_raw(context: AssetExecutionContext) -> Path:
+    """Download MetaboLights compound data via REST API.
+
+    Downloads compound metadata including:
+    - ~33,000 reference compounds
+    - InChI, InChIKey, ChEBI IDs
+    - Molecular formulas and names
+
+    Note: Full download takes significant time due to API rate limits.
+
+    Outputs: raw_data/MetaboLights/compounds.json
+    """
+    output_dir = RAW_DATA_DIR / "MetaboLights"
+
+    # Check if data already exists
+    compounds_file = output_dir / "compounds.json"
+    if compounds_file.exists():
+        import json
+        with open(compounds_file) as f:
+            compounds = json.load(f)
+        context.log.info(f"Using existing data: {len(compounds)} compounds in {compounds_file}")
+        return output_dir
+
+    context.log.info("Downloading MetaboLights compound data (this may take a long time)...")
+    result_path = fetch_metabolights(output_dir=output_dir)
+    context.log.info(f"MetaboLights data saved to {result_path}")
 
     return output_dir

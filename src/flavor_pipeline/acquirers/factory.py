@@ -6,7 +6,6 @@ acquisition assets.
 """
 
 from pathlib import Path
-from typing import Callable
 
 from dagster import AssetExecutionContext, AssetsDefinition, asset
 
@@ -64,6 +63,10 @@ def create_asset_for_acquirer(acquirer: BaseAcquirer) -> AssetsDefinition:
         result_path = acquirer.fetch()
         context.log.info(f"Data saved to {result_path}")
 
+        # Make raw data read-only to prevent accidental modification
+        acquirer.make_readonly()
+        context.log.info("Raw data set to read-only")
+
         # Validate output
         errors = acquirer.validate()
         if errors:
@@ -107,7 +110,7 @@ def create_acquisition_assets(
 def create_acquisition_asset(
     acquirer_class: type[BaseAcquirer],
     **kwargs,
-) -> Callable[[AssetExecutionContext], Path]:
+) -> AssetsDefinition:
     """Decorator-style factory for creating an acquisition asset.
 
     This allows defining assets inline while still using the acquirer pattern.

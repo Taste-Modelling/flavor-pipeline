@@ -384,7 +384,7 @@ def extract_panten_data(input_pdf: Path, output_dir: Path) -> Path:
     print(f"Saved: {output_csv}")
 
     # Print statistics
-    print(f"\n--- Statistics ---")
+    print("\n--- Statistics ---")
     print(f"Total compounds: {len(compounds)}")
     with_cas = sum(1 for c in compounds if c["cas_numbers"])
     print(f"With CAS number: {with_cas}")

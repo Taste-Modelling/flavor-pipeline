@@ -1,5 +1,6 @@
 """Base acquirer class for data acquisition with Dagster integration."""
 
+import stat
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -59,8 +60,8 @@ class BaseAcquirer(ABC):
     @property
     def output_dir(self) -> Path:
         """Directory where this acquirer writes data."""
-        # Default: raw_data/{Name} (capitalized)
-        return self._raw_data_base / self.name.capitalize()
+        # Default: raw_data/{name} (lowercase, matching acquirer name)
+        return self._raw_data_base / self.name
 
     @property
     @abstractmethod
@@ -146,7 +147,70 @@ class BaseAcquirer(ABC):
             raise ValueError(f"Archive checksum mismatch for {self.name}")
 
         extract_archive(self.archive_path, self.output_dir)
+        self.make_readonly()
         return self.output_dir
+
+    def make_readonly(self) -> None:
+        """Make all files in output_dir read-only.
+
+        This protects raw data from accidental modification after acquisition.
+        Files are set to read-only for user/group/other (0o444).
+        Directories are set to read+execute (0o555) to allow traversal.
+        """
+        if not self.output_dir.exists():
+            return
+
+        for path in self.output_dir.rglob("*"):
+            if path.is_file():
+                # Remove write permissions: r--r--r--
+                path.chmod(stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+            elif path.is_dir():
+                # Directories need execute for traversal: r-xr-xr-x
+                path.chmod(
+                    stat.S_IRUSR | stat.S_IXUSR |
+                    stat.S_IRGRP | stat.S_IXGRP |
+                    stat.S_IROTH | stat.S_IXOTH
+                )
+
+        # Also set the output directory itself
+        self.output_dir.chmod(
+            stat.S_IRUSR | stat.S_IXUSR |
+            stat.S_IRGRP | stat.S_IXGRP |
+            stat.S_IROTH | stat.S_IXOTH
+        )
+
+    def make_writable(self) -> None:
+        """Make all files in output_dir writable again.
+
+        This is useful when re-acquiring data or updating existing files.
+        Files are set to read+write for user (0o644).
+        Directories are set to read+write+execute for user (0o755).
+        """
+        if not self.output_dir.exists():
+            return
+
+        # First make the directory writable so we can modify contents
+        self.output_dir.chmod(
+            stat.S_IRWXU |
+            stat.S_IRGRP | stat.S_IXGRP |
+            stat.S_IROTH | stat.S_IXOTH
+        )
+
+        for path in self.output_dir.rglob("*"):
+            if path.is_dir():
+                # Directories: rwxr-xr-x
+                path.chmod(
+                    stat.S_IRWXU |
+                    stat.S_IRGRP | stat.S_IXGRP |
+                    stat.S_IROTH | stat.S_IXOTH
+                )
+            elif path.is_file():
+                # Files: rw-r--r--
+                path.chmod(
+                    stat.S_IRUSR | stat.S_IWUSR |
+                    stat.S_IRGRP |
+                    stat.S_IROTH
+                )
 
     def create_archive_from_raw(self) -> tuple[str, int]:
         """Create an archive from the current raw data.

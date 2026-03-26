@@ -18,10 +18,6 @@ class CulinaryDBAcquirer(BaseAcquirer):
     url = "https://cosylab.iiitd.edu.in/culinarydb/"
 
     @property
-    def output_dir(self) -> Path:
-        return self._raw_data_base / "Culinarydb"
-
-    @property
     def output_files(self) -> list[str]:
         return [
             "01_Recipe_Details.csv",
