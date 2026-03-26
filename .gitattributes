@@ -1,0 +1,7 @@
+# Git LFS tracking for large archive files (>100MB)
+# These archives contain large datasets that exceed GitHub's file size limits
+
+archives/foodb.zip filter=lfs diff=lfs merge=lfs -text
+archives/usda.zip filter=lfs diff=lfs merge=lfs -text
+archives/foodatlas.zip filter=lfs diff=lfs merge=lfs -text
+archives/winesensed.zip filter=lfs diff=lfs merge=lfs -text

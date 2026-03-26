@@ -62,3 +62,24 @@ clean-data:
 
 # Clean all generated data
 clean-all: clean-raw clean-data
+
+# Archive commands
+# Create archives from raw data (all or specific acquirers)
+archive-create *acquirers:
+    python -m flavor_pipeline.cli.archive_commands create {{acquirers}}
+
+# Verify archive checksums
+archive-verify *acquirers:
+    python -m flavor_pipeline.cli.archive_commands verify {{acquirers}}
+
+# Restore raw data from archives
+archive-restore *acquirers:
+    python -m flavor_pipeline.cli.archive_commands restore {{acquirers}}
+
+# Force restore (overwrite existing raw data)
+archive-restore-force *acquirers:
+    python -m flavor_pipeline.cli.archive_commands restore --force {{acquirers}}
+
+# List archive status
+archive-list:
+    python -m flavor_pipeline.cli.archive_commands list

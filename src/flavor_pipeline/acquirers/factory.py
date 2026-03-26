@@ -35,7 +35,7 @@ def create_asset_for_acquirer(acquirer: BaseAcquirer) -> AssetsDefinition:
         description=acquirer.description,
     )
     def _asset_fn(context: AssetExecutionContext) -> Path:
-        # Check cache first
+        # 1. Check if raw data already exists
         if acquirer.is_cached():
             context.log.info(f"Using cached data in {acquirer.output_dir}")
             # Still validate cached data
@@ -44,7 +44,22 @@ def create_asset_for_acquirer(acquirer: BaseAcquirer) -> AssetsDefinition:
                 context.log.warning(f"Validation warnings: {errors}")
             return acquirer.output_dir
 
-        # Fetch fresh data
+        # 2. Check if valid archive exists - restore from it
+        if acquirer.has_valid_archive():
+            context.log.info(f"Restoring {acquirer.name} from archive...")
+            acquirer.restore_from_archive()
+            context.log.info(f"Data restored to {acquirer.output_dir}")
+
+            # Validate restored data
+            errors = acquirer.validate()
+            if errors:
+                context.log.warning(f"Validation warnings: {errors}")
+
+            meta = acquirer.get_asset_metadata()
+            context.log.info(f"Acquisition metadata: {meta}")
+            return acquirer.output_dir
+
+        # 3. Fetch fresh data
         context.log.info(f"Fetching {acquirer.name} data...")
         result_path = acquirer.fetch()
         context.log.info(f"Data saved to {result_path}")
