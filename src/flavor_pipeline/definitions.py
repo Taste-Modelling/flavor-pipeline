@@ -12,6 +12,7 @@ from dagster import Definitions, load_assets_from_modules
 
 from flavor_pipeline.acquirers.factory import create_acquisition_assets
 from flavor_pipeline.assets import tier1, tier2
+from flavor_pipeline.derived.food_composition import assets as food_composition_assets
 from flavor_pipeline.food_assets import tier1 as food_tier1
 from flavor_pipeline.food_assets import tier2 as food_tier2
 
@@ -29,6 +30,9 @@ tier2_assets = load_assets_from_modules([tier2])
 food_tier1_assets = load_assets_from_modules([food_tier1])
 food_tier2_assets = load_assets_from_modules([food_tier2])
 
+# Derived assets (specialized datasets built on core pipeline)
+derived_food_composition_assets = load_assets_from_modules([food_composition_assets])
+
 # Combine all assets
 all_assets = [
     *acquisition_assets,
@@ -36,6 +40,7 @@ all_assets = [
     *tier2_assets,
     *food_tier1_assets,
     *food_tier2_assets,
+    *derived_food_composition_assets,
 ]
 
 defs = Definitions(

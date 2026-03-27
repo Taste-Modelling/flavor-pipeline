@@ -2,6 +2,10 @@
 raw_data/
 data/
 
+# Archives (too large for git without LFS)
+archives/*.zip
+archives/*.tar.gz
+
 # Python
 __pycache__/
 *.py[cod]
